@@ -16,21 +16,31 @@ public class UserController {
         this.userService = userService;
     }
 
+
     @GetMapping
-    public ResponseEntity<UserEntity> getUserById(@RequestParam int id) {
-        UserEntity user = userService.getUser(id);
+    public ResponseEntity<UserEntity> getUserById(
+            @RequestParam(required = false) Integer id, 
+            @RequestBody(required = false) UserRequest userRequest) {
+        
+        if (id == null && userRequest == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        int userId = (id != null) ? id : userRequest.getId();
+        
+        UserEntity user = userService.getUser(userId);
 
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/get")
+    @PostMapping
     public ResponseEntity<UserEntity> getUserByJson(@RequestBody UserRequest userRequest) {
         UserEntity user = userService.getUser(userRequest.getId());
 
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<UserEntity> addUser(@RequestBody UserRequest userRequest) {
         UserEntity user = userService.addUser(userRequest);
 
